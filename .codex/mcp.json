@@ -1,0 +1,10 @@
+{
+    "mcpServers": {
+        "assessor-financeiro": {
+            "command": "C:\\Users\\heitormiasato-ieg\\AppData\\Roaming\\Python\\Python314\\python.exe",
+            "args": [
+                "C:\\Users\\heitormiasato-ieg\\OneDrive - Instituto J&F\\Área de Trabalho\\Segundo Ano TECH\\TECH\\Inteligência Artificial\\memoria\\multiagentes\\MigracaoFastAPI\\app\\mcp_server.py"
+            ]
+        }
+    }
+}

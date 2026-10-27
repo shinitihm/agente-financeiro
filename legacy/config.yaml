@@ -1,0 +1,3 @@
+Agent_Model:
+  gemini_flash: "gemini-2.5-flash"
+  groq_llama: "llama-3.3-70b-versatile"

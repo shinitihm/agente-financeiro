@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Etapa 8 — Prática livre: o juiz e a escrita</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#050a14; --cyan:#00e5ff; --green:#00ff88; --orange:#ff6b35;
+  --purple:#7c3aed; --pink:#f472b6; --red:#ff4d6d;
+  --text:#e8f4f8; --muted:#7fa8c0; --card:rgba(255,255,255,.04);
+  --border:rgba(0,229,255,.16);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif}
+#bg{position:fixed;inset:0;z-index:0;opacity:.3;pointer-events:none}
+#progress-bar{position:fixed;top:0;left:0;height:3px;z-index:200;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:width .35s}
+#topbar{position:fixed;top:0;left:0;right:0;height:52px;z-index:150;background:rgba(5,10,20,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.tb-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase}
+.tb-title,.tb-counter{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)}
+.tb-title{max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+#slides{position:fixed;inset:0;z-index:1}
+.slide{position:absolute;inset:0;display:flex;justify-content:center;align-items:flex-start;padding:72px 64px 80px;opacity:0;pointer-events:none;transform:translateX(55px);transition:opacity .45s,transform .45s;overflow-y:auto}
+.slide.active{opacity:1;pointer-events:auto;transform:none}.slide.prev{transform:translateX(-55px)}
+.slide-inner{width:100%;max-width:1080px;margin:auto 0}
+#nav-prev,#nav-next{position:fixed;top:50%;z-index:200;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:1px solid var(--border);background:rgba(5,10,20,.75);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--cyan);cursor:pointer;user-select:none}
+#nav-prev{left:16px}#nav-next{right:16px}#nav-prev:hover,#nav-next:hover{border-color:var(--cyan);background:rgba(0,229,255,.1)}
+#nav-prev.disabled,#nav-next.disabled{opacity:.25;pointer-events:none}
+#dots{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:200;max-width:72%;flex-wrap:wrap;justify-content:center}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);opacity:.4;cursor:pointer}.dot.active{background:var(--cyan);opacity:1;transform:scale(1.3)}.dot.done{background:var(--green);opacity:.8}
+h1{font-family:'Syne',sans-serif;font-size:clamp(2.15rem,4.6vw,4rem);font-weight:800;line-height:1.08;margin-bottom:18px}
+h2{font-family:'Syne',sans-serif;font-size:clamp(1.45rem,3vw,2.35rem);font-weight:800;line-height:1.16;margin-bottom:12px}
+h3{font-family:'Syne',sans-serif;font-size:1.08rem;margin-bottom:10px}
+.lead{color:var(--muted);font-size:1rem;line-height:1.7;margin-bottom:20px;max-width:900px}
+.badge,.tag{font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:2px;font-size:11px}
+.badge{display:inline-flex;align-items:center;gap:9px;color:var(--cyan);border:1px solid var(--border);background:rgba(0,229,255,.07);border-radius:20px;padding:6px 15px;margin-bottom:24px}
+.badge::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}@keyframes pulse{50%{opacity:.45;transform:scale(1.5)}}
+.tag{display:block;margin-bottom:10px;color:var(--cyan)}.tag.orange{color:var(--orange)}.tag.green{color:var(--green)}.tag.purple{color:#c4b5fd}
+.hero-q{max-width:870px;border:1px solid rgba(255,107,53,.3);border-left:4px solid var(--orange);border-radius:12px;padding:19px 24px;background:linear-gradient(135deg,rgba(255,107,53,.07),rgba(124,58,237,.06));font-size:1.03rem;line-height:1.6}
+.pill-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}.pill{font:12px 'IBM Plex Mono',monospace;color:var(--green);border:1px solid rgba(0,255,136,.26);background:rgba(0,255,136,.06);border-radius:18px;padding:5px 13px}
+.g2,.g3,.g4{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:20px}.card p,.card li{color:var(--muted);font-size:.86rem;line-height:1.62}.card ul,.card ol{margin-left:18px}.card strong{color:var(--text)}
+.flow{display:flex;align-items:stretch;gap:8px;margin:18px 0;flex-wrap:nowrap}.node{flex:1;min-width:0;border:1px solid var(--border);border-radius:13px;background:var(--card);padding:14px}.node small{display:block;font:9px 'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1.3px;color:var(--muted);margin-bottom:7px}.node strong{font-family:'Syne',sans-serif;font-size:.91rem;display:block}.node.danger{border-color:rgba(255,77,109,.5);background:rgba(255,77,109,.06)}.node.good{border-color:rgba(0,255,136,.38);background:rgba(0,255,136,.05)}.arrow{align-self:center;color:var(--muted)}
+.callout{border-left:3px solid;border-radius:0 9px 9px 0;padding:13px 17px;margin-top:14px;background:rgba(255,255,255,.03)}.callout .ct{font:10px 'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1.4px;margin-bottom:5px}.callout p,.callout li{font-size:.84rem;line-height:1.62;color:var(--muted)}.callout ul,.callout ol{margin-left:20px}.info{border-color:var(--purple)}.info .ct{color:#c4b5fd}.warn{border-color:var(--orange)}.warn .ct{color:var(--orange)}.ok{border-color:var(--green)}.ok .ct{color:var(--green)}.err{border-color:var(--red)}.err .ct{color:#ff8fa3}
+code{font-family:'IBM Plex Mono',monospace;background:rgba(0,0,0,.32);padding:1px 6px;border-radius:4px;color:var(--text);font-size:.9em}
+.code{white-space:pre-wrap;background:rgba(0,0,0,.44);border:1px solid var(--border);border-radius:11px;padding:15px 18px;font:12px/1.7 'IBM Plex Mono',monospace;color:#bfe4f2;overflow-x:auto}
+.invariant{padding:23px;border:1px solid rgba(0,255,136,.38);background:linear-gradient(135deg,rgba(0,255,136,.07),rgba(0,229,255,.05));border-radius:16px;font:600 clamp(1rem,2.2vw,1.35rem)/1.55 'IBM Plex Mono',monospace;color:var(--green);text-align:center;margin:20px 0}
+.tbl{width:100%;border-collapse:collapse;font-size:.83rem}.tbl th{text-align:left;color:var(--cyan);font:10px 'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1.3px;padding:9px 11px;border-bottom:1px solid var(--border)}.tbl td{vertical-align:top;color:var(--muted);line-height:1.5;padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.06)}.tbl td strong{color:var(--text)}.tbl tr:hover td{background:rgba(0,229,255,.025)}
+.scenario{border:1px solid var(--border);border-radius:14px;overflow:hidden}.scenario-head{background:rgba(0,0,0,.35);padding:11px 15px;font:11px 'IBM Plex Mono',monospace;color:var(--cyan);letter-spacing:1px}.scenario-body{padding:17px}.scenario-body ol{margin-left:20px}.scenario-body li{color:var(--muted);line-height:1.65;font-size:.86rem}.expected{margin-top:12px;padding:11px 14px;border-radius:9px;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.25);color:var(--green);font:12px/1.55 'IBM Plex Mono',monospace}
+.score{font:800 2rem 'Syne',sans-serif;color:var(--cyan);margin-bottom:5px}.deliverable{display:flex;gap:14px;align-items:flex-start;padding:13px 15px;border:1px solid var(--border);border-radius:11px;background:var(--card);margin-bottom:9px}.deliverable .n{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;border:1px solid var(--green);color:var(--green);font:12px 'IBM Plex Mono',monospace}.deliverable p{color:var(--muted);font-size:.86rem;line-height:1.55}.deliverable strong{color:var(--text)}
+.checklist{display:flex;flex-direction:column;gap:8px}.check{display:flex;gap:11px;align-items:center;padding:10px 14px;border:1px solid var(--border);background:var(--card);border-radius:10px;font:12px 'IBM Plex Mono',monospace}.check::before{content:'✓';display:flex;width:20px;height:20px;border:1px solid var(--green);color:var(--green);border-radius:50%;align-items:center;justify-content:center;flex:none}
+.muted{color:var(--muted)}
+@media(max-width:820px){.g3,.g4{grid-template-columns:1fr 1fr}.flow{flex-wrap:wrap}.node{min-width:42%}.arrow{display:none}}
+@media(max-width:620px){.slide{padding:70px 44px 72px}.g2,.g3,.g4{grid-template-columns:1fr}.tb-title{display:none}#nav-prev{left:5px}#nav-next{right:5px}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div id="progress-bar"></div>
+<div id="topbar"><span class="tb-label">⬡ Etapa 8 — Prática livre</span><span class="tb-title" id="slide-title-bar"></span><span class="tb-counter" id="slide-counter"></span></div>
+<div id="nav-prev">←</div><div id="nav-next">→</div><div id="dots"></div>
+
+<main id="slides">
+<section class="slide active" data-title="O problema que ficou">
+  <div class="slide-inner">
+    <div class="badge">ETAPA 8 · PRÁTICA LIVRE · 2 DIAS</div>
+    <h1>O chat disse <span style="color:var(--orange)">não</span>.<br>O banco disse <span style="color:var(--cyan)">sim</span>.</h1>
+    <p class="lead">Na Etapa 7 o juiz passou a cuidar da frase que chega ao usuário. A tool que escreve já tinha confirmado o efeito antes desse veredito. Nos próximos dois dias o grupo pesquisa, escolhe uma solução e implementa. O formato é livre.</p>
+    <div class="hero-q">O caso da compra em dólares foi o sintoma visto em aula. A mesma ordem — a tool grava, fecha a conexão, e só então o juiz fala — está em <strong>toda tool que altera o banco</strong>, no financeiro e na agenda.</div>
+    <div class="g2" style="margin-top:18px">
+      <div class="card"><h3 style="color:var(--orange)">Antes de começar</h3><p>Enviem o projeto <strong>como está hoje</strong>, com o juiz da Etapa 7 e sem a correção. Essa cópia é a linha de base para comparar com o que for entregue no final.</p></div>
+      <div class="card"><h3 style="color:var(--green)">Ao final dos 2 dias</h3><p>A correção fica no repositório do grupo. Na raiz, o <code>decisao_tecnica.md</code> traz a decisão e a lista dos arquivos <strong>criados</strong> e dos <strong>modificados</strong>.</p></div>
+    </div>
+    <div class="callout warn"><div class="ct">O que a prática altera</div><p>A mudança fica na fronteira entre o veredito e a escrita. Rotas, API e os outros fluxos da arquitetura permanecem. Agente novo só entra se a solução não existir sem ele. A diferença entre as duas entregas mostra o que saiu desse limite.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Toda escrita">
+  <div class="slide-inner">
+    <span class="tag orange">o defeito é da arquitetura</span>
+    <h2>Prove o desencontro em cada tool que grava.</h2>
+    <p class="lead">Um marcador único por tentativa. Anotem o estado antes, o rótulo <code>[juiz]</code> e o estado depois. A frase do chat, sozinha, não mostra o que ficou no Postgres.</p>
+    <table class="tbl"><thead><tr><th>Tool</th><th>O que ela faz no banco</th><th>O que reproduzir</th></tr></thead><tbody>
+      <tr><td><strong>add_transaction</strong></td><td><code>INSERT</code> em <code>transactions</code> e <code>commit()</code> dentro da tool</td><td>Uma criação cuja frase o juiz recusa, e a linha que permanece.</td></tr>
+      <tr><td><strong>update_transaction</strong></td><td><code>UPDATE</code> na mesma tabela e <code>commit()</code> dentro da tool</td><td>Uma alteração de valor, data ou descrição que o juiz recusa, e o registro já mudado.</td></tr>
+      <tr><td><strong>add_event</strong></td><td><code>INSERT</code> em <code>events</code> e <code>commit()</code> dentro da tool</td><td>Um compromisso cuja frase o juiz recusa, e o evento que permanece.</td></tr>
+    </tbody></table>
+    <div class="callout warn"><div class="ct">O rollback que já existe</div><p>O <code>rollback()</code> de cada tool cobre uma exceção SQL <em>antes</em> do commit. Quando o juiz responde, a conexão daquela tool já foi fechada.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Autópsia do turno">
+  <div class="slide-inner">
+    <span class="tag">ordem atual</span>
+    <h2>O veredito chega depois da escrita permanente.</h2>
+    <div class="flow">
+      <div class="node"><small>1 · modelo</small><strong>escolhe a tool</strong></div><span class="arrow">→</span>
+      <div class="node danger"><small>2 · tool de escrita</small><strong>grava e dá commit</strong></div><span class="arrow">→</span>
+      <div class="node"><small>3 · orquestrador</small><strong>redige a frase</strong></div><span class="arrow">→</span>
+      <div class="node danger"><small>4 · juiz</small><strong>pode trocar a frase</strong></div><span class="arrow">→</span>
+      <div class="node"><small>5 · chat</small><strong>mostra o texto seguro</strong></div>
+    </div>
+    <div class="callout err"><div class="ct">O que o usuário vê e o que o banco guarda</div><p>A frase final pode ser “Não tenho evidência para afirmar isso.” A linha em <code>transactions</code> ou em <code>events</code> continua lá, porque o <code>commit()</code> aconteceu no passo 2, dentro de <code>add_transaction</code>, <code>update_transaction</code> ou <code>add_event</code>.</p></div>
+    <div class="callout info"><div class="ct">A pergunta da prática</div><p>Onde fica a fronteira que autoriza uma escrita a permanecer, e essa fronteira alcança as três tools?</p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="Contrato da prática">
+  <div class="slide-inner">
+    <span class="tag green">a invariável</span>
+    <h2>O resultado vale mais que o mecanismo.</h2>
+    <div class="invariant">SE O TURNO FOR RECUSADO,<br>NENHUMA ESCRITA DESSE TURNO PERMANECE<br>— CRIAÇÃO OU ALTERAÇÃO, NO FINANCEIRO E NA AGENDA.</div>
+    <div class="g3">
+      <div class="card"><h3 style="color:var(--green)">Recusado</h3><p>O usuário recebe uma resposta segura. <code>transactions</code> e <code>events</code> ficam iguais ao estado de antes do turno.</p></div>
+      <div class="card"><h3 style="color:var(--cyan)">Aprovado</h3><p>A escrita ocorre uma vez. A frase fica sustentada pela fala do usuário e pelo retorno da tool.</p></div>
+      <div class="card"><h3 style="color:var(--orange)">Juiz sem resposta</h3><p>Timeout, exceção ou ausência de chave é uma decisão do grupo. O arquivo diz o que o usuário vê e o que o banco guarda nesse caso.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="Escopo">
+  <div class="slide-inner">
+    <span class="tag purple">todas as escritas</span>
+    <h2>A correção atravessa quem altera o banco.</h2>
+    <table class="tbl"><thead><tr><th>Peça</th><th>Papel nesta prática</th></tr></thead><tbody>
+      <tr><td><strong>add_transaction</strong></td><td>Escrita obrigatória. Criar um lançamento.</td></tr>
+      <tr><td><strong>update_transaction</strong></td><td>Escrita obrigatória. Alterar um lançamento que já existe.</td></tr>
+      <tr><td><strong>add_event</strong></td><td>Escrita obrigatória. Criar um compromisso em <code>events</code>.</td></tr>
+      <tr><td><strong>Leituras</strong></td><td><code>query_transactions</code>, <code>total_balance</code>, <code>daily_balance</code> e <code>query_events</code> continuam. Consultar não cria nem altera linha.</td></tr>
+      <tr><td><strong>add_google_event</strong></td><td>Efeito fora do Postgres. Entra ou fica de fora: os dois caminhos são decisão, e o arquivo explica por quê.</td></tr>
+      <tr><td><strong>salvar_mensagem</strong></td><td>Grava no Mongo a frase que o usuário viu, depois do juiz. Digam o que fizeram com essa escrita.</td></tr>
+    </tbody></table>
+    <div class="callout warn"><div class="ct">Uma tool só deixa o furo aberto</div><p>Corrigir <code>add_transaction</code> e deixar <code>update_transaction</code> ou <code>add_event</code> com o commit anterior ao juiz mantém o mesmo problema em outra tabela.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="A escolha é do grupo">
+  <div class="slide-inner">
+    <span class="tag">pesquisem</span>
+    <h2>Há mais de um jeito. O grupo escolhe um.</h2>
+    <p class="lead">Estes nomes são famílias de solução, para orientar a pesquisa. A comparação de custo, latência, falha e concorrência é trabalho do grupo e entra no <code>decisao_tecnica.md</code>.</p>
+    <div class="g4">
+      <div class="card"><h3>Interceptar</h3><p>Algo julga a ação antes de a tool que escreve ser chamada.</p></div>
+      <div class="card"><h3>Adiar</h3><p>A tool prepara a mudança. A confirmação permanente espera o veredito.</p></div>
+      <div class="card"><h3>Transacionar</h3><p>O turno compartilha uma unidade de trabalho. Aprovar confirma. Recusar desfaz.</p></div>
+      <div class="card"><h3>Compensar</h3><p>O efeito acontece e, na recusa, uma ação inversa desfaz o que ficou.</p></div>
+    </div>
+    <div class="callout info"><div class="ct">O que será lido</div><p>A invariante nas três escritas, a evidência de que ela se sustenta, e a qualidade da justificativa. O nome do padrão fica em segundo plano. Combinar famílias ou propor outro caminho faz parte da prática.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-title="O que conta">
+  <div class="slide-inner">
+    <span class="tag orange">o contrato continua valendo</span>
+    <h2>A solução protege a escrita e deixa o resto de pé.</h2>
+    <div class="g2">
+      <div class="card"><h3 style="color:var(--red)">Fica de fora da solução</h3><ul><li>Desligar as tools de escrita.</li><li>Remover o juiz ou fazê-lo aprovar sempre.</li><li>Apagar a linha na mão depois do teste.</li><li>Tratar uma frase pronta, como “2 dólares”, e parar aí.</li><li>Mudar só o prompt e chamar isso de garantia.</li><li>Cobrir uma tool e deixar as outras escritas como estavam.</li><li>Alterar rota, API ou outro fluxo da arquitetura.</li><li>Criar agente que a solução não precisa.</li></ul></div>
+      <div class="card"><h3 style="color:var(--green)">Continua funcionando</h3><ul><li>Um lançamento válido e uma alteração válida.</li><li>Um evento válido na agenda.</li><li>As consultas de financeiro e de agenda.</li><li>O guardrail e o juiz que já existem.</li><li>O monitor da Etapa 6, com latência, erro, tokens e custo do turno.</li><li>Uma frase compreensível quando a escrita não permanece.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-title="decisao_tecnica.md">
+  <div class="slide-inner">
+    <span class="tag green">último slide · entrega</span>
+    <h2>Na raiz do repositório: <span style="color:var(--cyan)">decisao_tecnica.md</span></h2>
+    <p class="lead">O código mostra o que ficou implementado. O arquivo mostra a decisão e nomeia cada arquivo criado e cada arquivo modificado. Sem segredo: sem chave, token, <code>.env</code> ou URL com senha.</p>
+    <div class="deliverable"><span class="n">1</span><p><strong>A decisão tomada, e por quê.</strong> Qual fronteira passou a autorizar a escrita, por que ela cabe neste grafo e qual garantia ela dá em <code>add_transaction</code>, <code>update_transaction</code> e <code>add_event</code>. Inclua o fluxo de antes e o de depois.</p></div>
+    <div class="deliverable"><span class="n">2</span><p><strong>As decisões que o grupo não tomou, e por quê.</strong> Cada caminho considerado e deixado de lado: como funcionaria aqui, uma vantagem real, um custo real e o motivo de ter ficado de fora neste projeto. “Era mais difícil”, sem o mecanismo, não responde.</p></div>
+    <div class="deliverable"><span class="n">3</span><p><strong>O efeito nas métricas do SRE, e como.</strong> Para a decisão tomada e para pelo menos uma que ficou de fora, digam o que muda no monitor da Etapa 6: latência do turno e p95 (SLO de 8 s), taxa de erro (SLO de 5%; exceção conta, bloqueio do guardrail de entrada não conta como erro), status <code>ok</code> / <code>erro</code> / <code>bloqueado</code>, tokens e custo. Expliquem o mecanismo: uma chamada a mais, uma conexão aberta à espera do veredito, um segundo efeito, um turno que termina em frase segura sem exceção.</p></div>
+    <div class="deliverable"><span class="n">4</span><p><strong>As outras decisões.</strong> O que entrou no escopo e o que ficou de fora (<code>add_google_event</code>, <code>salvar_mensagem</code>) e por quê. O que acontece se o juiz não responde. O que resta se o processo cair entre dois passos. O que uma repetição do mesmo pedido faz com a escrita. A evidência, com marcador único, de recusa sem efeito e de aprovação uma única vez, nas três tools.</p></div>
+    <div class="deliverable"><span class="n">5</span><p><strong>Arquivos criados e arquivos modificados.</strong> Duas listas, com o caminho de cada arquivo. Na de modificados, uma frase diz o que mudou. Arquivo novo sem função na solução aparece aqui do mesmo jeito. Rota, API e os outros fluxos que permaneceram iguais ficam de fora dessas listas.</p></div>
+  </div>
+</section>
+</main>
+
+<script>
+const canvas=document.getElementById('bg'),ctx=canvas.getContext('2d');let W,H,pts=[];
+function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;pts=Array.from({length:Math.floor(W*H/19000)},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.5+1}))}resize();addEventListener('resize',resize);
+function draw(){ctx.clearRect(0,0,W,H);for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1}for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.hypot(dx,dy);if(d<115){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(124,58,237,${.13*(1-d/115)})`;ctx.stroke()}}for(const p of pts){ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(0,229,255,.5)';ctx.fill()}requestAnimationFrame(draw)}draw();
+const slides=[...document.querySelectorAll('.slide')],dots=document.getElementById('dots');let current=0;
+slides.forEach((_,i)=>{const d=document.createElement('span');d.className='dot';d.onclick=()=>go(i);dots.appendChild(d)});
+function go(n){if(n<0||n>=slides.length)return;slides.forEach((s,i)=>{s.classList.remove('active','prev');if(i<n)s.classList.add('prev')});slides[n].classList.add('active');current=n;document.getElementById('progress-bar').style.width=((n+1)/slides.length*100)+'%';document.getElementById('slide-counter').textContent=`${n+1} / ${slides.length}`;document.getElementById('slide-title-bar').textContent=slides[n].dataset.title||'';document.getElementById('nav-prev').classList.toggle('disabled',n===0);document.getElementById('nav-next').classList.toggle('disabled',n===slides.length-1);[...dots.children].forEach((d,i)=>{d.classList.toggle('active',i===n);d.classList.toggle('done',i<n)})}
+document.getElementById('nav-prev').onclick=()=>go(current-1);document.getElementById('nav-next').onclick=()=>go(current+1);document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')go(current+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(current-1)});go(0);
+</script>
+</body>
+</html>

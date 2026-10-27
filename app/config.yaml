@@ -1,0 +1,3 @@
+Agent_Model:
+  gemini_flash: "gemini-2.5-flash"
+  groq_llama: "openai/gpt-oss-120b"
