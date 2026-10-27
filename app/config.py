@@ -15,6 +15,10 @@ GROQ_API_KEY   = os.getenv("GROQ_API_KEY")
 DATABASE_URL   = os.getenv("DATABASE_URL")
 MONGODB_URI    = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 TYPESAFE_API_KEY= os.getenv("TYPESAFE_API_KEY")
+
+GOOGLE_CALENDAR_MCP_URL      = os.getenv("GOOGLE_CALENDAR_MCP_URL", "https://calendarmcp.googleapis.com/mcp/v1")
+GOOGLE_CALENDAR_ACCESS_TOKEN = os.getenv("GOOGLE_CALENDAR_ACCESS_TOKEN")
+GOOGLE_OAUTH_CREDENTIALS     = os.getenv("GOOGLE_OAUTH_CREDENTIALS", "gcp-oauth.keys.json")
 OBRIGATORIAS = {
     "GEMINI_API_KEY": GEMINI_API_KEY,
     "GROQ_API_KEY":   GROQ_API_KEY,
