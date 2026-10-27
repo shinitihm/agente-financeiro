@@ -2,7 +2,8 @@
 __pycache__/
 *.py[codz]
 *$py.class
-
+gcp-oauth.keys.json
+google-calendar.token.json
 # C extensions
 *.so
 
