@@ -7,7 +7,8 @@ da Google em https://calendarmcp.googleapis.com/mcp/v1 (streamable HTTP).
 O login é OAuth Desktop com google-auth-oauthlib. O Chrome abre, o aluno
 autoriza, o token fica em google-calendar.token.json na raiz do projeto.
 
-Este módulo NÃO grava no Postgres.
+add_event grava o compromisso na tabela events do Postgres;
+add_google_event cria o mesmo compromisso no Google Calendar.
 """
 from __future__ import annotations
 
@@ -17,9 +18,12 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Optional
+from zoneinfo import ZoneInfo
 
 from langchain.tools import tool
 from pydantic import BaseModel, Field
+
+from app.tools.connection import get_conn
 
 from app.config import (
     BASE_DIR,
@@ -319,4 +323,79 @@ def add_google_event(
     return bruto
 
 
+def _com_fuso(momento: Optional[str]) -> Optional[str]:
+    """Horário sem fuso vira horário de Brasília, não UTC do servidor."""
+    if not momento:
+        return None
+    try:
+        data = datetime.fromisoformat(momento.strip())
+    except ValueError:
+        return momento
+    if data.tzinfo is None:
+        data = data.replace(tzinfo=ZoneInfo("America/Sao_Paulo"))
+    return data.isoformat()
+
+
+class AddEventArgs(BaseModel):
+    title: str = Field(..., description="Título do compromisso.")
+    start_time: str = Field(..., description="Início em ISO 8601 (ex.: 2026-09-18T15:00:00-03:00).")
+    source_text: str = Field(..., description="Texto original do usuário.")
+    end_time: Optional[str] = Field(default=None, description="Fim em ISO 8601, se o usuário informou.")
+    location: Optional[str] = Field(default=None, description="Local.")
+    notes: Optional[str] = Field(default=None, description="Observações.")
+
+
+@tool("add_event", args_schema=AddEventArgs)
+def add_event(
+    title: str,
+    start_time: str,
+    source_text: str,
+    end_time: Optional[str] = None,
+    location: Optional[str] = None,
+    notes: Optional[str] = None,
+) -> dict:
+    """Grava o compromisso na tabela events do Postgres. Não mexe no Google Calendar."""
+    conn = None
+    cur = None
+
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO events
+                (title, start_time, end_time, location, notes, source_text)
+            VALUES
+                (%s, %s::timestamptz, %s::timestamptz, %s, %s, %s)
+            RETURNING id, start_time, end_time;
+            """,
+            (title, _com_fuso(start_time), _com_fuso(end_time), location, notes, source_text),
+        )
+        new_id, inicio, fim = cur.fetchone()
+        conn.commit()
+
+        return {
+            "status": "ok",
+            "id": new_id,
+            "title": title,
+            "start_time": str(inicio),
+            "end_time": str(fim) if fim else None,
+        }
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return {"status": "error", "message": str(e)}
+
+    finally:
+        try:
+            if cur:
+                cur.close()
+            if conn:
+                conn.close()
+        except Exception:
+            pass
+
+
 TOOLS_GOOGLE = [add_google_event]
+TOOLS_AGENDA = [add_event, add_google_event]

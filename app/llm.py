@@ -3,7 +3,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_groq import ChatGroq
 from app.tools.pg_tools import TOOLS
-from app.tools.agenda import TOOLS_GOOGLE
+from app.tools.agenda import TOOLS_AGENDA
 from datetime import datetime, timedelta
 from langchain_community.vectorstores import FAISS
 from langchain_core.messages import RemoveMessage
@@ -79,7 +79,7 @@ financeiro_app = create_agent(
 #O DE AGENDA
 agenda_app = create_agent(
   model=llm_especialista,
-  tools=TOOLS_GOOGLE,
+  tools=TOOLS_AGENDA,
   system_prompt=AGENDA_PROMPT_COMPLETO,
 )
 

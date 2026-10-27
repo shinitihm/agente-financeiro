@@ -150,7 +150,7 @@ def no_guardrail_saida(estado: Estado) -> dict:
 
 def decidir_pos_guardrail_entrada(estado: Estado) -> str:
     """Lê o protocolo do guardrail e devolve o próximo nó."""
-    return estado["rota"] if estado["rota"] == "fim" else "fim"
+    return "fim" if estado["rota"] == END else "roteador"
 
 # ==============================================================================
 # CONSTRUÇÃO DO GRAFO
@@ -168,7 +168,7 @@ grafo.add_node("juiz", no_juiz)
 
 
 
-grafo.set_entry_point("roteador")
+grafo.set_entry_point("guardrail_entrada")
 
 grafo.add_conditional_edges(
     "roteador",
