@@ -1,21 +1,11 @@
-import os
 import re
 import unicodedata
 from typing import Optional,List
 
-import psycopg2
-from dotenv import load_dotenv
 from langchain.tools import tool
 from pydantic import BaseModel, Field
 
-load_dotenv()
-
-DATABASE_URL = os.getenv("LINK_URL")
-
-def get_conn():
-    if not DATABASE_URL:
-        raise ValueError("A variável LINK_URL não foi encontrada no .env")
-    return psycopg2.connect(DATABASE_URL)
+from app.tools.connection import get_conn
 
 
 def _normalize_text(text: str) -> str:
@@ -698,7 +688,7 @@ def update_transaction(
         resolved_type_id = _resolve_type_id(cur, type_id, type_name) if (type_id or type_name) else None
         resolved_category_id = category_id
         if category_name and not category_id:
-            resolved_category_id = resolved_category_id(cur, category_name)
+            resolved_category_id = _resolve_category_id(cur, None, category_name)
 
         # Montar SET dinâmico
         sets = []
@@ -778,4 +768,4 @@ def update_transaction(
         except Exception:
             pass
 
-TOOLS = [add_transaction, query_transactions, sum_transactions, total_balance, daily_balance]
+TOOLS = [add_transaction, query_transactions, sum_transactions, total_balance, daily_balance, update_transaction]
